@@ -6,6 +6,8 @@
         <entry key="..\:/GithubRepositories/app/src/main/res/drawable/ic_star.xml" value="0.19583333333333333" />
         <entry key="..\:/GithubRepositories/app/src/main/res/layout/activity_main.xml" value="0.3333333333333333" />
         <entry key="..\:/GithubRepositories/app/src/main/res/layout/repo_view_item.xml" value="0.22" />
+        <entry key="..\:/GithubRepositories/app/src/main/res/layout/repos_load_state_footer_view_item.xml" value="0.1" />
+        <entry key="..\:/GithubRepositories/app/src/main/res/layout/separator_view_item.xml" value="0.1" />
       </map>
     </option>
   </component>

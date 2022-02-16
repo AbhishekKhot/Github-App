@@ -1,4 +1,4 @@
-package com.example.githubrepositories.ui.adapter
+package com.example.githubrepositories.ui.viewholders
 
 import android.content.Intent
 import android.net.Uri
@@ -45,7 +45,6 @@ class RepositoryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         this.repo = repo
         name.text = repo.fullName
 
-        // if the description is missing, hide the TextView
         var descriptionVisibility = View.GONE
         if (repo.description != null) {
             description.text = repo.description

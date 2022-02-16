@@ -1,7 +1,9 @@
 package com.example.githubrepositories.model
 
+import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
 
+@Entity(tableName = "repos")
 data class Repo(
     @field:SerializedName("id") var id: Long,
     @field:SerializedName("name") var name: String,

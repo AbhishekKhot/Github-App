@@ -1,8 +1,13 @@
 package com.example.githubrepositories.data
 
 import android.util.Log
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.example.githubrepositories.api.GithubService
 import com.example.githubrepositories.api.IN_QUALIFIER
+import com.example.githubrepositories.db.RepoDatabase
 import com.example.githubrepositories.model.Repo
 import com.example.githubrepositories.model.RepoSearchResult
 import kotlinx.coroutines.flow.Flow
@@ -11,70 +16,30 @@ import retrofit2.HttpException
 import java.io.IOException
 
 private const val GITHUB_STARTING_PAGE_INDEX = 1
+class GithubRepository(
+    private val service: GithubService,
+    private val database: RepoDatabase
+) {
 
-class GithubRepository(private val service: GithubService) {
-
-    private val inMemoryCache = mutableListOf<Repo>()
-    private val searchResults = MutableSharedFlow<RepoSearchResult>(replay = 1)
-    private var lastRequestedPage = GITHUB_STARTING_PAGE_INDEX
-    private var isRequestInProgress = false
-
-    suspend fun getSearchResultStream(query: String): Flow<RepoSearchResult> {
+    fun getSearchResultStream(query: String): Flow<PagingData<Repo>> {
         Log.d("GithubRepository", "New query: $query")
-        lastRequestedPage = 1
-        inMemoryCache.clear()
-        requestAndSaveData(query)
-        return searchResults
-    }
 
-    suspend fun requestMore(query: String) {
-        if (isRequestInProgress) return
-        val successful = requestAndSaveData(query)
-        if (successful) {
-            lastRequestedPage++
-        }
-    }
+        val dbQuery = "%${query.replace(' ', '%')}%"
+        val pagingSourceFactory = { database.reposDao().reposByName(dbQuery) }
 
-    suspend fun retry(query: String) {
-        if (isRequestInProgress) return
-        requestAndSaveData(query)
-    }
-
-    private suspend fun requestAndSaveData(query: String): Boolean {
-        isRequestInProgress = true
-        var successful = false
-
-        val apiQuery = query + IN_QUALIFIER
-        try {
-            val response =
-                service.searchRepositories(apiQuery, lastRequestedPage, NETWORK_PAGE_SIZE)
-            Log.d("GithubRepository", "response $response")
-            val repos = response.items ?: emptyList()
-            inMemoryCache.addAll(repos)
-            val reposByName = reposByName(query)
-
-            searchResults.emit(RepoSearchResult.Success(reposByName))
-            successful = true
-        } catch (exception: IOException) {
-            searchResults.emit(RepoSearchResult.Error(exception))
-        } catch (exception: HttpException) {
-            searchResults.emit(RepoSearchResult.Error(exception))
-        }
-        isRequestInProgress = false
-        return successful
-    }
-
-    private fun reposByName(query: String): List<Repo> {
-        return inMemoryCache.filter {
-            it.name.contains(query, true) || (it.description != null && it.description.contains(
+        @OptIn(ExperimentalPagingApi::class)
+        return Pager(
+            config = PagingConfig(pageSize = NETWORK_PAGE_SIZE, enablePlaceholders = false),
+            remoteMediator = GithubRemoteMediator(
                 query,
-                true))
-        }.sortedWith(compareByDescending<Repo> { it.stars }.thenBy { it.name })
+                service,
+                database
+            ),
+            pagingSourceFactory = pagingSourceFactory
+        ).flow
     }
 
     companion object {
         const val NETWORK_PAGE_SIZE = 30
     }
-
-
 }
