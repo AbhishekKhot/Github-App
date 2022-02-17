@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.githubrepositories.R
 import com.example.githubrepositories.databinding.ReposLoadStateFooterViewItemBinding
 
-class ReposLoadStateViewHolder(
+class RepositoryLoadStateViewHolder(
     private val binding: ReposLoadStateFooterViewItemBinding,
     retry: () -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
@@ -27,11 +27,11 @@ class ReposLoadStateViewHolder(
     }
 
     companion object {
-        fun create(parent: ViewGroup, retry: () -> Unit): ReposLoadStateViewHolder {
+        fun create(parent: ViewGroup, retry: () -> Unit): RepositoryLoadStateViewHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.repos_load_state_footer_view_item, parent, false)
             val binding = ReposLoadStateFooterViewItemBinding.bind(view)
-            return ReposLoadStateViewHolder(binding, retry)
+            return RepositoryLoadStateViewHolder(binding, retry)
         }
     }
 }

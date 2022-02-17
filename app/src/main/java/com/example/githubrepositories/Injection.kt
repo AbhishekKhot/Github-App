@@ -14,7 +14,7 @@ object Injection {
         return GithubRepository(GithubService.create(), RepoDatabase.getInstance(context))
     }
 
-    fun provideViewModelFactory(context: Context, owner: SavedStateRegistryOwner): ViewModelProvider.Factory {
-        return ViewModelProviderFactory(owner, provideGithubRepository(context))
+    fun provideViewModelFactory(context: Context): ViewModelProvider.Factory {
+        return ViewModelProviderFactory(provideGithubRepository(context))
     }
 }

@@ -9,7 +9,6 @@ import com.example.githubrepositories.model.Repo
 
 @Dao
 interface RepoDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(repos: List<Repo>)
 

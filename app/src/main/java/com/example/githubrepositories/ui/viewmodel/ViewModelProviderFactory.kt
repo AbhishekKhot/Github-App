@@ -1,25 +1,16 @@
 package com.example.githubrepositories.ui.viewmodel
 
-import androidx.lifecycle.AbstractSavedStateViewModelFactory
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.savedstate.SavedStateRegistryOwner
+import androidx.lifecycle.ViewModelProvider
 import com.example.githubrepositories.data.GithubRepository
 
 
-class ViewModelProviderFactory(
-    owner: SavedStateRegistryOwner,
-    private val repository: GithubRepository
-) : AbstractSavedStateViewModelFactory(owner, null) {
-
-    override fun <T : ViewModel?> create(
-        key: String,
-        modelClass: Class<T>,
-        handle: SavedStateHandle
-    ): T {
+class ViewModelProviderFactory(private val repository: GithubRepository) :
+    ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SearchRepositoriesViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return SearchRepositoriesViewModel(repository, handle) as T
+            return SearchRepositoriesViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

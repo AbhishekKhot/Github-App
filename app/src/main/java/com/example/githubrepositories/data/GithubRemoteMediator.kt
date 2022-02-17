@@ -36,17 +36,13 @@ class GithubRemoteMediator(
             LoadType.PREPEND -> {
                 val remoteKeys = getRemoteKeyForFirstItem(state)
                 val prevKey = remoteKeys?.prevKey
-                if (prevKey == null) {
-                    return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
-                }
+                    ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
                 prevKey
             }
             LoadType.APPEND -> {
                 val remoteKeys = getRemoteKeyForLastItem(state)
                 val nextKey = remoteKeys?.nextKey
-                if (nextKey == null) {
-                    return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
-                }
+                    ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
                 nextKey
             }
         }
@@ -54,7 +50,7 @@ class GithubRemoteMediator(
         val apiQuery = query + IN_QUALIFIER
 
         try {
-            val apiResponse = service.searchRepositories(apiQuery, page!!, state.config.pageSize)
+            val apiResponse = service.searchRepositories(apiQuery, page, state.config.pageSize)
 
             val repos = apiResponse.items
             val endOfPaginationReached = repos.isEmpty()
@@ -63,8 +59,8 @@ class GithubRemoteMediator(
                     repoDatabase.remoteKeysDao().clearRemoteKeys()
                     repoDatabase.reposDao().clearRepos()
                 }
-                val prevKey = if (page == GITHUB_STARTING_PAGE_INDEX) null else page!! - 1
-                val nextKey = if (endOfPaginationReached) null else page!! + 1
+                val prevKey = if (page == GITHUB_STARTING_PAGE_INDEX) null else page - 1
+                val nextKey = if (endOfPaginationReached) null else page + 1
                 val keys = repos.map {
                     RemoteKeys(repoId = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
@@ -89,7 +85,7 @@ class GithubRemoteMediator(
         }
     }
 
-    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, Repo>) : RemoteKeys? {
+    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, Repo>): RemoteKeys? {
         return state.pages.firstOrNull() {
             it.data.isNotEmpty()
         }?.data?.firstOrNull()?.let {
@@ -98,7 +94,7 @@ class GithubRemoteMediator(
     }
 
     private suspend fun getRemoteKeyClosestToCurrentPosition(
-        state: PagingState<Int, Repo>
+        state: PagingState<Int, Repo>,
     ): RemoteKeys? {
         return state.anchorPosition?.let { position ->
             state.closestItemToPosition(position)?.id?.let {

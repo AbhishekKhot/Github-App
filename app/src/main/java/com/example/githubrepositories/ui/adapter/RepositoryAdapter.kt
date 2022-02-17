@@ -5,11 +5,12 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.githubrepositories.R
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.githubrepositories.ui.viewholders.RepositoryViewHolder
 import com.example.githubrepositories.ui.viewholders.SeparatorViewHolder
 import com.example.githubrepositories.ui.viewmodel.UiModel
 
-class RepositoryAdapter : PagingDataAdapter<UiModel, RecyclerView.ViewHolder>(UIMODEL_COMPARATOR) {
+class RepositoryAdapter : PagingDataAdapter<UiModel, ViewHolder>(UIMODEL_COMPARATOR) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == R.layout.repo_view_item) {
             RepositoryViewHolder.create(parent)
