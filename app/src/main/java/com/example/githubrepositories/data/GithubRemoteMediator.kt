@@ -33,16 +33,15 @@ class GithubRemoteMediator(
                 val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
                 remoteKeys?.nextKey?.minus(1) ?: GITHUB_STARTING_PAGE_INDEX
             }
-            LoadType.APPEND -> {
+            LoadType.PREPEND -> {
                 val remoteKeys = getRemoteKeyForFirstItem(state)
                 val prevKey = remoteKeys?.prevKey
-                if (prevKey) {
+                if (prevKey == null) {
                     return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
-
                 }
                 prevKey
             }
-            LoadType.PREPEND -> {
+            LoadType.APPEND -> {
                 val remoteKeys = getRemoteKeyForLastItem(state)
                 val nextKey = remoteKeys?.nextKey
                 if (nextKey == null) {

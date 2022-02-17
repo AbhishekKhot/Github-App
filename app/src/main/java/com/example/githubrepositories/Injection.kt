@@ -10,14 +10,6 @@ import com.example.githubrepositories.ui.viewmodel.ViewModelProviderFactory
 
 object Injection {
 
-//    private fun provideGithubRepository():GithubRepository {
-//        return GithubRepository(GithubService.create())
-//    }
-//
-//    fun provideViewModelFactory(owner:SavedStateRegistryOwner):ViewModelProvider.Factory {
-//        return ViewModelProviderFactory(owner, provideGithubRepository())
-//    }
-
     private fun provideGithubRepository(context: Context): GithubRepository {
         return GithubRepository(GithubService.create(), RepoDatabase.getInstance(context))
     }
